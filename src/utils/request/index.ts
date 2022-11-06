@@ -41,15 +41,15 @@ const transform: AxiosTransform = {
     }
 
     //  这里 code为 后台统一的字段，需要在 types.ts内修改为项目自己的接口返回格式
-    const { code } = data;
+    const { errcode } = data;
 
     // 这里逻辑可以根据项目进行修改
-    const hasSuccess = data && code === 0;
+    const hasSuccess = data && errcode === 0;
     if (hasSuccess) {
-      return data.data;
+      return data.result;
     }
 
-    throw new Error(`请求接口错误, 错误码: ${code}`);
+    throw new Error(`请求接口错误, 错误码: ${errcode}`);
   },
 
   // 请求前处理配置
@@ -166,11 +166,11 @@ function createAxios(opt?: Partial<CreateAxiosOptions>) {
           // 接口地址
           apiUrl: host,
           // 是否自动添加接口前缀
-          isJoinPrefix: true,
+          isJoinPrefix: false,
           // 接口前缀
           // 例如: https://www.baidu.com/api
           // urlPrefix: '/api'
-          urlPrefix: '/api',
+          urlPrefix: '/',
           // 是否返回原生响应头 比如：需要获取响应头时使用该属性
           isReturnNativeResponse: false,
           // 需要对返回数据进行处理
