@@ -99,7 +99,7 @@ import * as echarts from 'echarts/core';
 import { GridComponent, TooltipComponent, LegendComponent } from 'echarts/components';
 import { LineChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
-import { useSettingStore } from '@/store';
+import { useSettingStore, getUserStore } from '@/store';
 
 import { LAST_7_DAYS } from '@/utils/date';
 import { USER_INFO_LIST, TEAM_MEMBERS, PRODUCT_LIST } from './constants';
@@ -141,10 +141,15 @@ const updateContainer = () => {
     height: lineContainer.clientHeight,
   });
 };
-
+const init = async () => {
+  initChart();
+  const userStore = getUserStore();
+  const authorities = await userStore.getAuthorities();
+  console.log('authorities', authorities);
+};
 onMounted(() => {
   nextTick(() => {
-    initChart();
+    init();
   });
   window.addEventListener('resize', updateContainer, false);
 });

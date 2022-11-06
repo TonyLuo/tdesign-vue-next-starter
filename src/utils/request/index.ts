@@ -5,7 +5,8 @@ import type { AxiosTransform, CreateAxiosOptions } from './AxiosTransform';
 import { VAxios } from './Axios';
 import proxy from '@/config/proxy';
 import { joinTimestamp, formatRequestDate, setObjToUrlParams } from './utils';
-import { TOKEN_NAME } from '@/config/global';
+// import { TOKEN_NAME } from '@/config/global';
+import { getUserStore } from '@/store';
 
 const env = import.meta.env.MODE || 'development';
 
@@ -110,8 +111,12 @@ const transform: AxiosTransform = {
   // 请求拦截器处理
   requestInterceptors: (config, options) => {
     // 请求之前处理config
-    const token = localStorage.getItem(TOKEN_NAME);
-    if (token && (config as Recordable)?.requestOptions?.withToken !== false) {
+    // const token = localStorage.getItem(TOKEN_NAME);
+    const userStore = getUserStore();
+    const { token } = userStore;
+    console.log('requestInterceptors token', token);
+
+    if (token && token !== '' && (config as Recordable)?.requestOptions?.withToken !== false) {
       // jwt token
       (config as Recordable).headers.Authorization = options.authenticationScheme
         ? `${options.authenticationScheme} ${token}`
@@ -152,7 +157,7 @@ function createAxios(opt?: Partial<CreateAxiosOptions>) {
       <CreateAxiosOptions>{
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#authentication_schemes
         // 例如: authenticationScheme: 'Bearer'
-        authenticationScheme: '',
+        authenticationScheme: 'Bearer',
         // 超时
         timeout: 10 * 1000,
         // 携带Cookie

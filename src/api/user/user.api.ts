@@ -1,6 +1,6 @@
 import { AxiosPromise } from 'axios';
 
-import BaseApi from '../base.api';
+import BaseApi from '@/api/base.api';
 
 export class UserApi extends BaseApi {
   public getAllAuthorities = (): AxiosPromise<any> => {

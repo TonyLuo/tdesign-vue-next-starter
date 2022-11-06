@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { TOKEN_NAME } from '@/config/global';
 import { store, usePermissionStore } from '@/store';
 import authApi from '@/api/user/auth.api';
+import userApi from '@/api/user/user.api';
 
 const InitUserInfo = {
   roles: [],
@@ -46,10 +47,16 @@ export const useUserStore = defineStore('user', {
 
       this.userInfo = res;
     },
+
+    async getAuthorities() {
+      const data = await userApi.getAllAuthorities();
+      console.log('getAuthorities', data);
+      return data;
+    },
     async logout() {
       localStorage.removeItem(TOKEN_NAME);
-      this.token = '';
-      this.userInfo = InitUserInfo;
+      this.token = null;
+      this.userInfo = null;
     },
     async removeToken() {
       this.token = '';
