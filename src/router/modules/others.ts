@@ -3,6 +3,21 @@ import LogoutIcon from '@/assets/assets-slide-logout.svg';
 
 export default [
   {
+    path: '/user-list',
+    name: 'userList',
+    component: Layout,
+    redirect: '/user-list/index',
+    meta: { title: '用户管理', icon: 'user-circle' },
+    children: [
+      {
+        path: 'index',
+        name: 'UserListIndex',
+        component: () => import('@/views/user/index.vue'),
+        meta: { title: '用户列表' },
+      },
+    ],
+  },
+  {
     path: '/user',
     name: 'user',
     component: Layout,
