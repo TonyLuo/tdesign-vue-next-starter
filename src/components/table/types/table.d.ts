@@ -277,4 +277,5 @@ export interface Pageable {
    * sort
    */
   sort?: string | array; // ['id,asc','name,desc','age,asc'],'id,asc',
+  filters?: any;
 }

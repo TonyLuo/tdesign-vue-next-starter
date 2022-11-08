@@ -73,7 +73,9 @@
         :hover="hover"
         :pagination="pagination"
         :loading="dataLoading"
+        :bordered="bordered"
         :header-affixed-top="{ offsetTop, container: getContainer }"
+        @filter-change="onFilterChange"
         @page-change="onPageChange"
         @change="onChange"
       >
@@ -132,12 +134,27 @@ import { useTable } from './base-table';
 const store = useSettingStore();
 const COLUMNS = [
   {
-    title: '合同名称',
+    title: '名称',
     fixed: 'left',
     width: 200,
     ellipsis: true,
     align: 'left',
     colKey: 'name',
+    // 输入框过滤配置
+    filter: {
+      type: 'input',
+      operator: 'like',
+
+      // 文本域搜索
+      // component: Textarea,
+
+      resetValue: '',
+      // 按下 Enter 键时也触发确认搜索
+      confirmEvents: ['onEnter'],
+      props: { placeholder: '输入关键词过滤' },
+      // 是否显示重置取消按钮，一般情况不需要显示
+      showConfirmAndReset: true,
+    },
   },
   { title: '合同状态', colKey: 'status', width: 200, cell: { col: 'status' } },
   {
@@ -179,9 +196,15 @@ const searchForm = {
   status: undefined,
   type: '',
 };
+// const filterValue = ref({ lastName: [], createTime: [] });
+const bordered = ref(true);
 
+// const setFilters = () => {
+//   filterValue.value = {};
+//   data.value = [...initData];
+// };
 const basicTableProps = { api: userApi.fetch, columns: COLUMNS, searchForm };
-const { data, dataLoading, formData, pagination, onPageChange, onChange, onReset, onSubmit } =
+const { data, dataLoading, formData, pagination, onPageChange, onChange, onFilterChange, onReset, onSubmit } =
   useTable(basicTableProps);
 const rowKey = 'index';
 const verticalAlign = 'top';

@@ -195,16 +195,16 @@ export const buildSearchStr = (pageable) => {
   return searchStr;
 };
 export const buildFilterCriteria = (pageable: any) => {
-  const { _filters, schemas } = pageable;
+  const { filters, schemas } = pageable;
 
-  console.log('buildFilterCriteria', _filters, schemas);
-  if (!_filters) {
+  console.log('buildFilterCriteria', filters, schemas);
+  if (!filters) {
     return '';
   }
 
   let filterStr = '';
-  for (const fieldName of Object.keys(_filters)) {
-    const values = _filters[fieldName];
+  for (const fieldName of Object.keys(filters)) {
+    const values = filters[fieldName];
     if (!(values && values.length > 0)) {
       continue;
     }
