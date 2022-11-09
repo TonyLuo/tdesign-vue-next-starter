@@ -85,7 +85,7 @@ const getContainer = () => {
   return document.querySelector(`.${prefix}-layout`);
 };
 
-export function useTable(tableProps?: BasicTableProps, url?: string) {
+export function useTable(tableProps?: any, url?: string) {
   // const data = ref(null);
   console.log('tableProps', tableProps);
   const error = ref(null);
@@ -101,7 +101,7 @@ export function useTable(tableProps?: BasicTableProps, url?: string) {
       const { pageSize, current } = unref(pagination);
       console.log('fetchData filters=', toRaw(filters.value));
       const pageable: Pageable = { page: current, size: pageSize, filters: toRaw(filters.value) };
-      const result = await api(pageable);
+      const result = await api.fetch(pageable);
       console.log(result);
       const { content, size, number, totalElements } = result;
       console.log(content);

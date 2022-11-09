@@ -18,7 +18,7 @@
                   v-model="searchFormData[item.colKey]"
                   class="form-item-content"
                   type="search"
-                  :placeholder="`请输入${item.title} ${item.colKey}`"
+                  :placeholder="`请输入${item.title}`"
                   :style="{ minWidth: '134px' }"
                 />
               </t-form-item>
@@ -36,41 +36,27 @@
     <div class="table-container">
       <t-table
         :data="data"
-        :columns="COLUMNS"
+        :columns="columns"
         :row-key="rowKey"
         :vertical-align="verticalAlign"
-        hover="true"
+        :hover="true"
         :pagination="pagination"
         :loading="dataLoading"
-        bordered="true"
+        :bordered="true"
         :header-affixed-top="{ offsetTop, container: getContainer }"
         @filter-change="onFilterChange"
         @page-change="onPageChange"
         @change="onChange"
       >
-        <template #status="{ row }">
-          <t-tag v-if="row.status === CONTRACT_STATUS.FAIL" theme="danger" variant="light"> 审核失败 </t-tag>
-          <t-tag v-if="row.status === CONTRACT_STATUS.AUDIT_PENDING" theme="warning" variant="light"> 待审核 </t-tag>
-          <t-tag v-if="row.status === CONTRACT_STATUS.EXEC_PENDING" theme="warning" variant="light"> 待履行 </t-tag>
-          <t-tag v-if="row.status === CONTRACT_STATUS.EXECUTING" theme="success" variant="light"> 履行中 </t-tag>
-          <t-tag v-if="row.status === CONTRACT_STATUS.FINISH" theme="success" variant="light"> 已完成 </t-tag>
+        <template v-for="item in Object.keys($slots)" #[item]="{ row }" :key="item">
+          <slot :name="item" v-bind="row || {}"></slot>
         </template>
-        <template #contractType="{ row }">
-          <p v-if="row.contractType === CONTRACT_TYPES.MAIN">审核失败</p>
-          <p v-if="row.contractType === CONTRACT_TYPES.SUB">待审核</p>
-          <p v-if="row.contractType === CONTRACT_TYPES.SUPPLEMENT">待履行</p>
-        </template>
-        <template #paymentType="{ row }">
-          <p v-if="row.paymentType === CONTRACT_PAYMENT_TYPES.PAYMENT" class="payment-col">
-            付款<trend class="dashboard-item-trend" type="up" />
-          </p>
-          <p v-if="row.paymentType === CONTRACT_PAYMENT_TYPES.RECEIPT" class="payment-col">
-            收款<trend class="dashboard-item-trend" type="down" />
-          </p>
-        </template>
+
         <template #op="slotProps">
-          <a class="t-button-link" @click="rehandleClickOp(slotProps)">管理</a>
-          <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
+          <slot name="op" v-bind="slotProps">
+            <a class="t-button-link" @click="rehandleClickOp(slotProps)">管理1</a>
+            <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
+          </slot>
         </template>
       </t-table>
       <t-dialog
@@ -86,81 +72,18 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { MessagePlugin } from 'tdesign-vue-next';
-import Trend from '@/components/trend/index.vue';
 import { useSettingStore } from '@/store';
 import { prefix } from '@/config/global';
-import userApi from '@/api/user/user.api';
 
-import {
-  CONTRACT_STATUS,
-  // CONTRACT_STATUS_OPTIONS,
-  CONTRACT_TYPES,
-  // CONTRACT_TYPE_OPTIONS,
-  CONTRACT_PAYMENT_TYPES,
-} from '@/constants';
 import { useTable } from './base-table';
 
+const props = defineProps({
+  columns: Array,
+  api: Object,
+});
 const store = useSettingStore();
-const COLUMNS = [
-  {
-    title: '名称',
-    fixed: 'left',
-    width: 200,
-    ellipsis: true,
-    align: 'left',
-    colKey: 'name',
-    // 输入框过滤配置
-    filter: {
-      type: 'input',
-      operator: 'like',
 
-      // 文本域搜索
-      // component: Textarea,
-
-      resetValue: '',
-      // 按下 Enter 键时也触发确认搜索
-      confirmEvents: ['onEnter'],
-      props: { placeholder: '输入关键词过滤' },
-      // 是否显示重置取消按钮，一般情况不需要显示
-      showConfirmAndReset: true,
-    },
-    search: true,
-  },
-  { title: '合同状态', colKey: 'status', width: 200, cell: { col: 'status' }, search: true },
-  {
-    title: '合同编号',
-    width: 200,
-    ellipsis: true,
-    colKey: 'no',
-  },
-  {
-    title: '合同类型',
-    width: 200,
-    ellipsis: true,
-    colKey: 'contractType',
-  },
-  {
-    title: '合同收付类型',
-    width: 200,
-    ellipsis: true,
-    colKey: 'paymentType',
-  },
-  {
-    title: '合同金额 (元)',
-    width: 200,
-    ellipsis: true,
-    colKey: 'amount',
-  },
-  {
-    align: 'left',
-    fixed: 'right',
-    width: 200,
-    colKey: 'op',
-    title: '操作',
-  },
-];
-
-const basicTableProps = { api: userApi.fetch, columns: COLUMNS };
+const basicTableProps = { api: props.api, columns: props.columns };
 const {
   data,
   dataLoading,

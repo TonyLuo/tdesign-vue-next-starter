@@ -37,9 +37,13 @@ export const useUserStore = defineStore('user', {
             roles: ['all'],
           };
         }
+        // return {
+        //   name: 'td_dev',
+        //   roles: ['UserIndex', 'DashboardBase', 'login', 'UserListIndex'],
+        // };
         return {
-          name: 'td_dev',
-          roles: ['UserIndex', 'DashboardBase', 'login', 'UserListIndex'],
+          name: 'td_main',
+          roles: ['all'],
         };
       };
 
