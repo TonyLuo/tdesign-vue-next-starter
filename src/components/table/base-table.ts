@@ -6,20 +6,12 @@ import { ref, isRef, unref, watchEffect, reactive, toRaw, computed, onMounted, o
 import { MessagePlugin } from 'tdesign-vue-next';
 import { isFunction } from 'lodash';
 import type { BasicTableProps, Pageable } from './types/table';
-import { getList } from '@/api/list';
 import { useSettingStore } from '@/store';
 import { prefix } from '@/config/global';
 
 const store = useSettingStore();
 
-const searchForm = {
-  name: '',
-  no: undefined,
-  status: undefined,
-  type: '',
-};
-
-const formData = ref({ ...searchForm });
+const searchFormData: any = ref({});
 const rowKey = 'index';
 const verticalAlign = 'top';
 const hover = true;
@@ -76,10 +68,13 @@ const handleClickDelete = ({ row }) => {
   confirmVisible.value = true;
 };
 const onReset = (val) => {
+  searchFormData.value = {};
   console.log(val);
 };
 const onSubmit = (val) => {
   console.log(val);
+
+  console.log('onSubmit searchFormData', toRaw(searchFormData.value));
 };
 
 const offsetTop = computed(() => {
@@ -166,5 +161,21 @@ export function useTable(tableProps?: BasicTableProps, url?: string) {
     tableRef.value = null;
   });
 
-  return { data, dataLoading, formData, error, pagination, onPageChange, onChange, onReset, onSubmit, onFilterChange };
+  const searchForm = computed(() => {
+    return tableProps?.columns.filter((col) => col.search);
+  });
+
+  return {
+    data,
+    dataLoading,
+    searchFormData,
+    searchForm,
+    error,
+    pagination,
+    onPageChange,
+    onChange,
+    onReset,
+    onSubmit,
+    onFilterChange,
+  };
 }

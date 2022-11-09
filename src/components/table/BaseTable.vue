@@ -1,8 +1,8 @@
 <template>
   <div class="list-common-table">
     <t-form
-      ref="form"
-      :data="formData"
+      ref="searchFormRef"
+      :data="searchFormData"
       :label-width="80"
       colon
       :style="{ marginBottom: '8px' }"
@@ -12,45 +12,14 @@
       <t-row>
         <t-col :span="10">
           <t-row :gutter="[16, 24]">
-            <t-col :span="4">
-              <t-form-item label="合同名称" name="name">
+            <t-col v-for="(item, index) in searchForm" :key="index" :span="4">
+              <t-form-item :label="item.title" :name="item.colKey">
                 <t-input
-                  v-model="formData.name"
+                  v-model="searchFormData[item.colKey]"
                   class="form-item-content"
                   type="search"
-                  placeholder="请输入合同名称"
+                  :placeholder="`请输入${item.title} ${item.colKey}`"
                   :style="{ minWidth: '134px' }"
-                />
-              </t-form-item>
-            </t-col>
-            <t-col :span="4">
-              <t-form-item label="合同状态" name="status">
-                <t-select
-                  v-model="formData.status"
-                  class="form-item-content"
-                  :options="CONTRACT_STATUS_OPTIONS"
-                  placeholder="请选择合同状态"
-                />
-              </t-form-item>
-            </t-col>
-            <t-col :span="4">
-              <t-form-item label="合同编号" name="no">
-                <t-input
-                  v-model="formData.no"
-                  class="form-item-content"
-                  placeholder="请输入合同编号"
-                  :style="{ minWidth: '134px' }"
-                />
-              </t-form-item>
-            </t-col>
-            <t-col :span="4">
-              <t-form-item label="合同类型" name="type">
-                <t-select
-                  v-model="formData.type"
-                  style="display: inline-block"
-                  class="form-item-content"
-                  :options="CONTRACT_TYPE_OPTIONS"
-                  placeholder="请选择合同类型"
                 />
               </t-form-item>
             </t-col>
@@ -70,10 +39,10 @@
         :columns="COLUMNS"
         :row-key="rowKey"
         :vertical-align="verticalAlign"
-        :hover="hover"
+        hover="true"
         :pagination="pagination"
         :loading="dataLoading"
-        :bordered="bordered"
+        bordered="true"
         :header-affixed-top="{ offsetTop, container: getContainer }"
         @filter-change="onFilterChange"
         @page-change="onPageChange"
@@ -124,9 +93,9 @@ import userApi from '@/api/user/user.api';
 
 import {
   CONTRACT_STATUS,
-  CONTRACT_STATUS_OPTIONS,
+  // CONTRACT_STATUS_OPTIONS,
   CONTRACT_TYPES,
-  CONTRACT_TYPE_OPTIONS,
+  // CONTRACT_TYPE_OPTIONS,
   CONTRACT_PAYMENT_TYPES,
 } from '@/constants';
 import { useTable } from './base-table';
@@ -155,8 +124,9 @@ const COLUMNS = [
       // 是否显示重置取消按钮，一般情况不需要显示
       showConfirmAndReset: true,
     },
+    search: true,
   },
-  { title: '合同状态', colKey: 'status', width: 200, cell: { col: 'status' } },
+  { title: '合同状态', colKey: 'status', width: 200, cell: { col: 'status' }, search: true },
   {
     title: '合同编号',
     width: 200,
@@ -190,25 +160,21 @@ const COLUMNS = [
   },
 ];
 
-const searchForm = {
-  name: '',
-  no: undefined,
-  status: undefined,
-  type: '',
-};
-// const filterValue = ref({ lastName: [], createTime: [] });
-const bordered = ref(true);
-
-// const setFilters = () => {
-//   filterValue.value = {};
-//   data.value = [...initData];
-// };
-const basicTableProps = { api: userApi.fetch, columns: COLUMNS, searchForm };
-const { data, dataLoading, formData, pagination, onPageChange, onChange, onFilterChange, onReset, onSubmit } =
-  useTable(basicTableProps);
+const basicTableProps = { api: userApi.fetch, columns: COLUMNS };
+const {
+  data,
+  dataLoading,
+  searchForm,
+  searchFormData,
+  pagination,
+  onPageChange,
+  onChange,
+  onFilterChange,
+  onReset,
+  onSubmit,
+} = useTable(basicTableProps);
 const rowKey = 'index';
 const verticalAlign = 'top';
-const hover = true;
 
 const confirmVisible = ref(false);
 
@@ -237,7 +203,9 @@ const onConfirmDelete = () => {
 const onCancel = () => {
   resetIdx();
 };
-
+// const onSubmit = () => {
+//   console.log('onSubmit formData', toRaw(formData.value));
+// };
 const handleClickDelete = ({ row }) => {
   deleteIdx.value = row.rowIndex;
   confirmVisible.value = true;
