@@ -3,9 +3,9 @@
     <template #contractType="row"> 审核失败 {{ row.id }} </template>
     <!-- <template #name="row"> 审核失败 {{ row.id }} </template> -->
 
-    <template #op="slotProps">
-      <a class="t-button-link" @click="rehandleClickOp(slotProps)">管理</a>
-      <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
+    <template #op="row">
+      <a class="t-button-link" @click="rehandleClickOp(row)">管理{{ row.id }} </a>
+      <a class="t-button-link" @click="handleClickDelete(row)">删除</a>
     </template>
   </base-table>
 </template>
@@ -76,12 +76,12 @@ const COLUMNS = [
     title: '操作',
   },
 ];
-const handleClickDelete = ({ row }) => {
+const handleClickDelete = (row) => {
   // deleteIdx.value = row.rowIndex;
   // confirmVisible.value = true;
 };
 
-const rehandleClickOp = ({ text, row }) => {
-  console.log(text, row);
+const rehandleClickOp = (row) => {
+  console.log(row);
 };
 </script>

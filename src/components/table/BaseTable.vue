@@ -52,10 +52,10 @@
           <slot :name="item" v-bind="row || {}"></slot>
         </template>
 
-        <template #op="slotProps">
-          <slot name="op" v-bind="slotProps">
-            <a class="t-button-link" @click="rehandleClickOp(slotProps)">管理1</a>
-            <a class="t-button-link" @click="handleClickDelete(slotProps)">删除</a>
+        <template #op="{ row }">
+          <slot name="op" v-bind="row">
+            <a class="t-button-link" @click="onEdit(row)">编辑</a>
+            <a class="t-button-link" @click="onDelete(row)">删除</a>
           </slot>
         </template>
       </t-table>
@@ -83,7 +83,7 @@ const props = defineProps({
 });
 const store = useSettingStore();
 
-const basicTableProps = { api: props.api, columns: props.columns };
+// const basicTableProps = { api: props.api, columns: props.columns };
 const {
   data,
   dataLoading,
@@ -95,7 +95,7 @@ const {
   onFilterChange,
   onReset,
   onSubmit,
-} = useTable(basicTableProps);
+} = useTable(props);
 const rowKey = 'index';
 const verticalAlign = 'top';
 
@@ -110,32 +110,23 @@ const confirmBody = computed(() => {
   return '';
 });
 
-const resetIdx = () => {
-  deleteIdx.value = -1;
-};
-
 const onConfirmDelete = () => {
   // 真实业务请发起请求
-  data.value.splice(deleteIdx.value, 1);
-  pagination.value.total = data.value.length;
   confirmVisible.value = false;
   MessagePlugin.success('删除成功');
-  resetIdx();
 };
 
 const onCancel = () => {
-  resetIdx();
+  confirmVisible.value = false;
 };
-// const onSubmit = () => {
-//   console.log('onSubmit formData', toRaw(formData.value));
-// };
-const handleClickDelete = ({ row }) => {
+
+const onDelete = (row: any) => {
   deleteIdx.value = row.rowIndex;
   confirmVisible.value = true;
 };
 
-const rehandleClickOp = ({ text, row }) => {
-  console.log(text, row);
+const onEdit = (row: any) => {
+  console.log(row);
 };
 
 const offsetTop = computed(() => {
